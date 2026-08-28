@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Project data
+/data/raw/
+/data/raw_prepared/
+/data/processed/
+/data/spectrograms/
+/Processed_unprepared/
+/processed/
+/spectrograms/
+
+# Generated reports and preprocessing metadata
+prep_report.json
+windows_metadata.json
+manifest.json
+norm_stats.json
+meta.json
+
+# Model checkpoints / serialized models
+*.pth
+*.pt
+*.ckpt
+*.onnx
+
+# Large numerical artifacts
+*.npy
+*.npz
+
+# Audio data
+*.wav
+*.mp3
+*.ogg
+*.flac
+*.m4a
+
+# Local experiment output folders
+outputs/
+results/
+checkpoints/
+models_saved/
+
+# Secrets / environment files
+.env
+.env.*
+*.pem
+*.key
