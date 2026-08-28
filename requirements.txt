@@ -1,0 +1,13 @@
+numpy
+scipy
+librosa
+soundfile
+noisereduce
+tqdm
+matplotlib
+scikit-image
+scikit-learn
+pandas
+torch
+seaborn
+ipython
