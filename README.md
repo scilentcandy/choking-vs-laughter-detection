@@ -87,7 +87,7 @@ The code is organized around the following workflow:
    - RNN feature-group importance analysis
    - Multi-Fusion CNN branch-importance analysis
 
-The diagram below shows how a raw recording flows through the pipeline, including exactly where the train/val/test split is applied relative to augmentation (this is the step most likely to raise data-leakage questions, so it's marked explicitly):
+The diagram below shows how a raw recording flows through the pipeline:
 
 <p align="center">
   <img src="pipeline_block_diagram.png" alt="End-to-end pipeline: raw recording through preparation, windowing, source-level train/val/test split, augmentation, feature extraction, normalization, and the multi-branch model" width="700">
