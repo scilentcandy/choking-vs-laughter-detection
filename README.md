@@ -1,6 +1,6 @@
 # Choking vs. Laughter Detection Using Audio Classification
 
-This repository contains the code developed for a final-year electrical engineering project at Tel Aviv University, comparing deep learning architectures for automatic acoustic discrimination between **choking** and **laughter** — two acoustically similar, non-speech vocal events with opposite safety implications.
+This repository contains the code developed for a final-year electrical engineering project at Tel Aviv University, comparing deep learning architectures for automatic acoustic discrimination between **choking** and **laughter**, two acoustically similar, non-speech vocal events with opposite safety implications.
 
 The project investigates whether machine-learning models can reliably distinguish these classes using a structured multi-feature audio representation, and whether different neural architectures rely on the same acoustic information to do so.
 
@@ -26,7 +26,7 @@ All multi-run results are reported as mean ± standard deviation across six seed
 
 ### 1. Recording-source confound diagnosis
 
-Early models showed a strong bias toward laughter (choking recall as low as 0.25) despite reasonable overall accuracy. Quantitative noise-floor analysis revealed an 18–29 dB gap between self-recorded choking clips and laughter clips from cleaner online sources — the model was partly learning to detect the recording microphone, not the sound itself.
+Early models showed a strong bias toward laughter (choking recall as low as 0.25) despite reasonable overall accuracy. Quantitative noise-floor analysis revealed an 18-29 dB gap between self-recorded choking clips and laughter clips from cleaner online sources. The model was partly learning to detect the recording microphone, not the sound itself.
 
 <p align="center">
   <img src="assets/recording_source_confound.png" alt="Noise floor comparison between self-recorded choking and two laughter sources, showing the recording-source confound" width="700">
@@ -36,11 +36,11 @@ A dedicated raw-audio preparation stage and a source-level (not window-level) tr
 
 ### 2. Preprocessing outweighed architecture
 
-Fixing data leakage and replacing per-sample normalization with per-channel z-score statistics (computed on the training set only) raised accuracy from ~57% to ~83% with no change to the network — the single largest improvement in the project.
+Fixing data leakage and replacing per-sample normalization with per-channel z-score statistics (computed on the training set only) raised accuracy from ~57% to ~83% with no change to the network. This was the single largest improvement in the project.
 
 ### 3. Feature importance is architecture-dependent
 
-A masking-based ablation study (six seeded runs, each feature group replaced by its training-set mean) found that the multi-branch CNN relies most heavily on **Transient** features to recognize laughter, while the BiLSTM relies most heavily on **Energy/Noise** features to recognize choking. The same acoustic information plays a different role depending on how the network consumes it — this is the project's central research finding.
+A masking-based ablation study (six seeded runs, each feature group replaced by its training-set mean) found that the multi-branch CNN relies most heavily on **Transient** features to recognize laughter, while the BiLSTM relies most heavily on **Energy/Noise** features to recognize choking. The same acoustic information plays a different role depending on how the network consumes it. This is the project's central research finding.
 
 <p align="center">
   <img src="assets/feature_importance_by_architecture.png" alt="Composite paired accuracy drop per feature group, compared between the CNN and RNN architectures" width="600">
@@ -119,19 +119,19 @@ choking-vs-laughter-detection/
     └── architecture_comparison_6_runs.ipynb
 ```
 
-> Confirm the notebook filenames above match what's actually committed before publishing — some working copies used different version suffixes during development.
+> Confirm the notebook filenames above match what's actually committed before publishing. Some working copies used different version suffixes during development.
 
 ## Audio representation
 
 The preprocessing pipeline extracts a 20-channel representation organized into three feature families, each feeding a dedicated branch of the multi-fusion CNN:
 
-**Tonal** — pitch, voicing, harmonic structure
+**Tonal**: pitch, voicing, harmonic structure
 - Log-Mel spectrogram, Harmonic Mel spectrogram, Chroma, Tonnetz, MFCC, Spectral contrast
 
-**Transient** — onsets, bursts, rapid spectral change
+**Transient**: onsets, bursts, rapid spectral change
 - Percussive Mel spectrogram, Delta, Delta-Delta, Spectral flux, Wide-band Mel spectrogram
 
-**Energy / Noise** — energy envelope, spectral noisiness, turbulence
+**Energy / Noise**: energy envelope, spectral noisiness, turbulence
 - RMS energy, RMS × periodicity, Zero-Crossing Rate (ZCR), Spectral flatness, Spectral centroid, Spectral rolloff, Spectral bandwidth, Fundamental frequency (F0), Voiced probability
 
 ## Data preparation
@@ -145,7 +145,7 @@ data/raw/laughter/
 
 Running `preprocessing/prepare_raw.py` creates fixed-length prepared windows under `data/raw_prepared/` and records preparation metadata.
 
-The feature-extraction stage then processes the prepared audio into train, validation, and test tensors. **Source recordings are grouped before splitting**, so that windows originating from the same recording remain in the same split — this is what prevents data leakage between train and test.
+The feature-extraction stage then processes the prepared audio into train, validation, and test tensors. **Source recordings are grouped before splitting**, so that windows originating from the same recording remain in the same split. This is what prevents data leakage between train and test.
 
 The generated audio, tensors, metadata, checkpoints, and other large experiment artifacts are intentionally excluded from this repository.
 
