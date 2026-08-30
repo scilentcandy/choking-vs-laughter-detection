@@ -4,23 +4,51 @@ This repository contains the code developed for a final-year electrical engineer
 
 The project investigates whether machine-learning models can reliably distinguish these classes using a structured multi-feature audio representation, and whether different neural architectures rely on the same acoustic information to do so.
 
-## Key results
+## Project pipeline
 
-| Stage | Architecture | Test accuracy |
-|---|---|---|
-| V1 | Fully-connected baseline | 58% |
-| V2 | Flat CNN | 82% (biased toward choking) |
-| V4 | Multi-branch CNN (Tonal / Transient / Energy) | 83%, balanced |
-| V4 + prepared audio | Multi-branch CNN, robustness test on 2× test set | 81% |
-| V4 + 15 epochs | Multi-branch CNN, extended training | 86.4% (best single run) |
-| V5 | BiLSTM | 88.4% ± 4.2% (mean over 6 seeded runs) |
-| V6 | CRNN (multi-branch CNN + BiGRU) | **91.2% ± 3.3%** (best mean, 6 seeded runs) |
+The code is organized around the following end-to-end workflow, from a raw recording to a classification decision:
 
-All multi-run results are reported as mean ± standard deviation across six seeded runs, not single-run snapshots.
+1. **Raw-audio preparation**
+   - resampling and cleanup
+   - noise-floor handling
+   - event-aware windowing
+   - silence/content screening
+   - normalization
+2. **Audio preprocessing and feature extraction**
+   - source-level train/validation/test splitting
+   - raw-signal augmentation
+   - pre-emphasis
+   - extraction of a 20-channel feature representation
+   - train-set normalization statistics
+3. **Model training and evaluation**
+   - Feed-Forward Neural Network (FNN)
+   - Flat Convolutional Neural Network (CNN)
+   - Multi-Fusion CNN
+   - Recurrent Neural Network (BiLSTM/RNN)
+   - Convolutional Recurrent Neural Network (CRNN)
+4. **Robustness and feature analysis**
+   - six-run architecture comparison
+   - RNN feature-group importance analysis
+   - Multi-Fusion CNN branch-importance analysis
+
+The diagram below shows how a raw recording flows through the pipeline:
 
 <p align="center">
-  <img src="architecture_comparison.png" alt="Accuracy and macro-F1 comparison across the three final architectures, mean ± SD over six seeded runs" width="600">
+  <img src="pipeline_block_diagram.png" alt="End-to-end pipeline: raw recording through preparation, windowing, source-level train/val/test split, augmentation, feature extraction, normalization, and the multi-branch model" width="700">
 </p>
+
+## Audio representation
+
+The preprocessing pipeline extracts a 20-channel representation organized into three feature families, each feeding a dedicated branch of the multi-fusion CNN:
+
+**Tonal**: pitch, voicing, harmonic structure
+- Log-Mel spectrogram, Harmonic Mel spectrogram, Chroma, Tonnetz, MFCC, Spectral contrast
+
+**Transient**: onsets, bursts, rapid spectral change
+- Percussive Mel spectrogram, Delta, Delta-Delta, Spectral flux, Wide-band Mel spectrogram
+
+**Energy / Noise**: energy envelope, spectral noisiness, turbulence
+- RMS energy, RMS × periodicity, Zero-Crossing Rate (ZCR), Spectral flatness, Spectral centroid, Spectral rolloff, Spectral bandwidth, Fundamental frequency (F0), Voiced probability
 
 ## Key contributions
 
@@ -60,37 +88,22 @@ The CRNN (V6) extends this design by feeding the fused branch representations in
   <img src="model_size_comparison.png" alt="Parameter count comparison: CNN, RNN, and CRNN" width="500">
 </p>
 
-## Project pipeline
+## Key results
 
-The code is organized around the following workflow:
+| Stage | Architecture | Test accuracy |
+|---|---|---|
+| V1 | Fully-connected baseline | 58% |
+| V2 | Flat CNN | 82% (biased toward choking) |
+| V4 | Multi-branch CNN (Tonal / Transient / Energy) | 83%, balanced |
+| V4 + prepared audio | Multi-branch CNN, robustness test on 2× test set | 81% |
+| V4 + 15 epochs | Multi-branch CNN, extended training | 86.4% (best single run) |
+| V5 | BiLSTM | 88.4% ± 4.2% (mean over 6 seeded runs) |
+| V6 | CRNN (multi-branch CNN + BiGRU) | **91.2% ± 3.3%** (best mean, 6 seeded runs) |
 
-1. **Raw-audio preparation**
-   - resampling and cleanup
-   - noise-floor handling
-   - event-aware windowing
-   - silence/content screening
-   - normalization
-2. **Audio preprocessing and feature extraction**
-   - source-level train/validation/test splitting
-   - raw-signal augmentation
-   - pre-emphasis
-   - extraction of a 20-channel feature representation
-   - train-set normalization statistics
-3. **Model training and evaluation**
-   - Feed-Forward Neural Network (FNN)
-   - Flat Convolutional Neural Network (CNN)
-   - Multi-Fusion CNN
-   - Recurrent Neural Network (BiLSTM/RNN)
-   - Convolutional Recurrent Neural Network (CRNN)
-4. **Robustness and feature analysis**
-   - six-run architecture comparison
-   - RNN feature-group importance analysis
-   - Multi-Fusion CNN branch-importance analysis
-
-The diagram below shows how a raw recording flows through the pipeline:
+All multi-run results are reported as mean ± standard deviation across six seeded runs, not single-run snapshots.
 
 <p align="center">
-  <img src="pipeline_block_diagram.png" alt="End-to-end pipeline: raw recording through preparation, windowing, source-level train/val/test split, augmentation, feature extraction, normalization, and the multi-branch model" width="700">
+  <img src="architecture_comparison.png" alt="Accuracy and macro-F1 comparison across the three final architectures, mean ± SD over six seeded runs" width="600">
 </p>
 
 ## Repository structure
@@ -125,19 +138,6 @@ choking-vs-laughter-detection/
 ```
 
 > Confirm the notebook filenames above match what's actually committed before publishing. Some working copies used different version suffixes during development.
-
-## Audio representation
-
-The preprocessing pipeline extracts a 20-channel representation organized into three feature families, each feeding a dedicated branch of the multi-fusion CNN:
-
-**Tonal**: pitch, voicing, harmonic structure
-- Log-Mel spectrogram, Harmonic Mel spectrogram, Chroma, Tonnetz, MFCC, Spectral contrast
-
-**Transient**: onsets, bursts, rapid spectral change
-- Percussive Mel spectrogram, Delta, Delta-Delta, Spectral flux, Wide-band Mel spectrogram
-
-**Energy / Noise**: energy envelope, spectral noisiness, turbulence
-- RMS energy, RMS × periodicity, Zero-Crossing Rate (ZCR), Spectral flatness, Spectral centroid, Spectral rolloff, Spectral bandwidth, Fundamental frequency (F0), Voiced probability
 
 ## Data preparation
 
