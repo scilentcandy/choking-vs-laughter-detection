@@ -19,7 +19,7 @@ The project investigates whether machine-learning models can reliably distinguis
 All multi-run results are reported as mean ± standard deviation across six seeded runs, not single-run snapshots.
 
 <p align="center">
-  <img src="assets/architecture_comparison.png" alt="Accuracy and macro-F1 comparison across the three final architectures, mean ± SD over six seeded runs" width="600">
+  <img src="architecture_comparison.png" alt="Accuracy and macro-F1 comparison across the three final architectures, mean ± SD over six seeded runs" width="600">
 </p>
 
 ## Key contributions
@@ -29,7 +29,7 @@ All multi-run results are reported as mean ± standard deviation across six seed
 Early models showed a strong bias toward laughter (choking recall as low as 0.25) despite reasonable overall accuracy. Quantitative noise-floor analysis revealed an 18-29 dB gap between self-recorded choking clips and laughter clips from cleaner online sources. The model was partly learning to detect the recording microphone, not the sound itself.
 
 <p align="center">
-  <img src="assets/recording_source_confound.png" alt="Noise floor comparison between self-recorded choking and two laughter sources, showing the recording-source confound" width="700">
+  <img src="recording_source_confound.png" alt="Noise floor comparison between self-recorded choking and two laughter sources, showing the recording-source confound" width="700">
 </p>
 
 A dedicated raw-audio preparation stage and a source-level (not window-level) train/val/test split were built to remove this shortcut.
@@ -43,7 +43,7 @@ Fixing data leakage and replacing per-sample normalization with per-channel z-sc
 A masking-based ablation study (six seeded runs, each feature group replaced by its training-set mean) found that the multi-branch CNN relies most heavily on **Transient** features to recognize laughter, while the BiLSTM relies most heavily on **Energy/Noise** features to recognize choking. The same acoustic information plays a different role depending on how the network consumes it. This is the project's central research finding.
 
 <p align="center">
-  <img src="assets/feature_importance_by_architecture.png" alt="Composite paired accuracy drop per feature group, compared between the CNN and RNN architectures" width="600">
+  <img src="feature_importance_by_architecture.png" alt="Composite paired accuracy drop per feature group, compared between the CNN and RNN architectures" width="600">
 </p>
 
 ## Model architecture
@@ -51,13 +51,13 @@ A masking-based ablation study (six seeded runs, each feature group replaced by 
 The multi-branch CNN splits the 20-channel input tensor into three feature-family branches (Tonal, Transient, Energy), each processed by its own convolutional path before late fusion into a shared classifier:
 
 <p align="center">
-  <img src="assets/architecture_diagram.png" alt="Multi-branch CNN architecture: three parallel branches (Tonal, Transient, Energy) fused before classification" width="500">
+  <img src="architecture_diagram.png" alt="Multi-branch CNN architecture: three parallel branches (Tonal, Transient, Energy) fused before classification" width="500">
 </p>
 
 The CRNN (V6) extends this design by feeding the fused branch representations into a bidirectional GRU, adding explicit temporal modelling on top of the convolutional feature extraction. It reaches the highest mean accuracy of all architectures tested while using roughly 25% fewer parameters than the standalone BiLSTM:
 
 <p align="center">
-  <img src="assets/model_size_comparison.png" alt="Parameter count comparison: CNN, RNN, and CRNN" width="500">
+  <img src="model_size_comparison.png" alt="Parameter count comparison: CNN, RNN, and CRNN" width="500">
 </p>
 
 ## Project pipeline
@@ -94,15 +94,13 @@ choking-vs-laughter-detection/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
+├── architecture_diagram.png
+├── recording_source_confound.png
+├── architecture_comparison.png
+├── feature_importance_by_architecture.png
+├── model_size_comparison.png
 │
-├── assets/
-│   ├── architecture_diagram.png
-│   ├── recording_source_confound.png
-│   ├── architecture_comparison.png
-│   ├── feature_importance_by_architecture.png
-│   └── model_size_comparison.png
-│
-├── preprocessing/
+├── processing/
 │   ├── prepare_raw.py
 │   └── audio_preprocessing_v3.py
 │
@@ -143,7 +141,7 @@ data/raw/choking/
 data/raw/laughter/
 ```
 
-Running `preprocessing/prepare_raw.py` creates fixed-length prepared windows under `data/raw_prepared/` and records preparation metadata.
+Running `processing/prepare_raw.py` creates fixed-length prepared windows under `data/raw_prepared/` and records preparation metadata.
 
 The feature-extraction stage then processes the prepared audio into train, validation, and test tensors. **Source recordings are grouped before splitting**, so that windows originating from the same recording remain in the same split. This is what prevents data leakage between train and test.
 
